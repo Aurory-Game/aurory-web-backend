@@ -1,0 +1,30 @@
+export const ITEMS_TABLE = 'nfts'
+export const PRECISION = 1e9
+
+// load from somewhere else?
+export const OPEN_STAKING_V1_REWARD_PHASES = [
+    [1636488000, 125],
+    [1638460800, 104],
+    [1638961200, 94],
+    [1640894400, 84],
+    [1644447600, 75]
+]
+
+export const LOCKED_STAKING_REWARD_START_TS = 1638212400
+export const LOCKED_STAKING_REWARD_PER_HOUR = 180
+
+export const AURY_TOKEN = 'AURYydfxJib1ZkTir1Jn1J9ECYUtjb6rKQVmtYaixWPP'
+export const XAURY_TOKEN = 'xAURp5XmAG7772mfkSy6vRAjGK9JofYjc3dmQDWdVDP'
+
+export const OPEN_STAKING_V1_PID = 'STkwf3sbMapjy7KV3hgrJtcVvY4SvRxWQ8pj4Enw1i5'
+export const LOCKED_STAKING_V1_PID = 'StKLLTf7CQ9n5BgXPSDXENovLTCuNc7N2ehvTb6JZ5x'
+export const AURORIANS_ON_EXPEDITION_PID = 'STkwf3sbMapjy7KV3hgrJtcVvY4SvRxWQ8pj4Enw1i5' // TBD
+
+export const OPEN_STAKING_V1_AURY_VAULT_TA = 'FysGks3izhgVhrUkub9QQWCTEVAdhkZKYSNK2F25maGD'
+export const OPEN_STAKING_V1_AURY_VAULT_BUMP = 249
+
+export const LOCKED_STAKING_V1_AURY_VAULT_TA = '2kdvio6nAr8facjEXNXXU8FqBhUremPvAebWFN3G4Cub'
+export const LOCKED_STAKING_V1_AURY_VAULT_BUMP = 252
+
+export const LOCKED_STAKING_V1_CONFIG_PDA = '2zp9UkdHAFPDJJ2umpNGP5fscTKeuKih6YzrfFmXoaR2'
+export const LOCKED_STAKING_V1_CONFIG_BUMP = 255

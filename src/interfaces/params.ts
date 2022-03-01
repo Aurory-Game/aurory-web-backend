@@ -1,54 +1,40 @@
-import { PublicKey } from '@solana/web3.js'
 import { Request } from 'express'
-import { NFTType } from '@interfaces/nfts'
 
-export interface TypedBody<T> extends Request {
-    body: T
+export type TypedBody<BodyType> = Request<{}, {}, BodyType>
+export type TypedQuery<QueryType> = Request<{}, {}, {}, QueryType>
+
+export type ReqTokens = TypedQuery<{
+    name: 'aury'
+}>
+
+export type ReqNFTs = TypedQuery<{
+    mint?: string,
+    id?: string
+}>
+
+export interface GetNft {
+    tableName: string, mint?: string, id?: string
 }
 
-enum OrderBy {
-    price = 'price',
-    date = 'date',
-    lastPrice = 'lastPrice',
-    bid = 'bid'
-}
+export type ReqExpeditions = TypedQuery<{
+    status?: 'active' | 'ended'
+}>
 
-enum OrderDir {
-    asc = 'asc',
-    desc = 'desc'
-}
+export type ReqListings = TypedQuery<{
+    page_token: string,
+    [key: string]: any
+}>
 
-interface Filter {
-    eq?: string | number
-    gt?: number,
-    lt?: number
-}
+type Reaction = 'upvote' | 'downvote'
 
-type Filters = Record<string, Filter>
+export type ReqReactions = TypedBody<{
+    reaction: Reaction
+}>
 
-export interface FilterMPRequest {
-    orderBy: OrderBy,
-    orderDir: OrderDir,
-    category?: NFTType,
-    offset?: number,
-    filters?: Filters
-}
+type MarketplaceEventType = 'purchase' | 'list' | 'delist'
 
-
-enum ReactionType {
-    upvote = 'upvote',
-    downvote = 'downvote'
-}
-
-export interface ReactionRequest {
-    listingId: string,
-    reaction: ReactionType,
-    txId: string
-    userPubkey?: PublicKey,
-    userId?: string
-}
-
-export interface ListingRequest {
-    listingId: string,
-    txId: string
-}
+export type ReqMarketplaceEvents = TypedBody<{
+    type: MarketplaceEventType,
+    listedId: string,
+    txId: string 
+}>

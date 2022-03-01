@@ -1,11 +1,6 @@
-import AWS from 'aws-sdk'
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 
-AWS.config.update({
-    region: process.env.AWS_REGION
+export const dynamoDBClient = new DynamoDBClient({ 
+    region: process.env.AWS_REGION,
+    endpoint: process.env.AWS_ENDPOINT
 })
-
-export { AWS }
-
-export function getDynamoDB(local: boolean = true): AWS.DynamoDB {
-    return local ? new AWS.DynamoDB({ endpoint: process.env.AWS_ENDPOINT }) : new AWS.DynamoDB()
-}

@@ -79,6 +79,41 @@ export interface Aurorian {
     }
 }
 
+interface Creator {
+    address: string,
+    share: number
+}
+
+
+interface Attribute {
+    trait_type: string,
+    value: number | string
+    display_type?: 'number',
+}
+
+interface file {
+    uri: string,
+    type: 'image/png' | 'image/gif' | 'video/mp4'
+}
+
+export interface NFT {
+    id: string, // Not in the standard, added by us
+    name?: string,
+    mint?: string, // Not in the standard, added by us
+    symbol?: string,
+    description?: string,
+    seller_fee_basis_points?: number,
+    image?: string,
+    external_url?: string,
+    edition?: 2021,
+    attributes?: Attribute[],
+    properties?: {
+        category: 'image' | 'video',
+        files: file[],
+        creators: Creator[]
+    }
+}
+
 export enum NFTType {
     Aurorian = 'Aurorian',
     Artwork = 'Artwork',
@@ -87,17 +122,4 @@ export enum NFTType {
     Key = 'Key',
     Egg = 'Egg',
     Land = 'Land'
-}
-
-export interface NFT {
-    type: NFTType
-}
-
-export interface NeftyStats extends NFT {
-    hp: number,
-    iniative: number,
-    atk: number,
-    atke: number,
-    def: number,
-    defe: number,
 }

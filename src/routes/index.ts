@@ -2,47 +2,34 @@ import express from 'express'
 const router = express.Router()
 
 import { errorLog } from '@utils/log'
-import { TypedBody, FilterMPRequest, ReactionRequest, ListingRequest } from '@interfaces/params'
+import { ReqNFTs } from '@interfaces/params'
+import { getNft } from '@utils/db'
+import { 
+    ITEMS_TABLE, PRECISION, OPEN_STAKING_V1_REWARD_PHASES, 
+    LOCKED_STAKING_REWARD_START_TS, LOCKED_STAKING_REWARD_PER_HOUR,
+    OPEN_STAKING_V1_AURY_VAULT_TA, LOCKED_STAKING_V1_AURY_VAULT_TA
+} from '@config/constants'
+import { NFT } from '@interfaces/nfts'
+import { provider } from '@wrappers/blockchain'
+import { PublicKey } from '@solana/web3.js'
+import BigNumber from 'bignumber.js'
 
 /**
- * Returns:
- * - mc: market cap
- * - fdv: FDV
- * - cs: circulating supply
- * - ms: max supply
+ * Get nft's metadata by it's name or mint
  */
-router.get('/token/aury', async ( req, res ) => {
+ router.get('/nfts', async ( req: ReqNFTs, res ) => {
     try {
+        const { mint, id } = req.query
+        const aurorian: NFT = await getNft({tableName: ITEMS_TABLE, id, mint})
 
+        return res.json(aurorian)
     } catch ( e ) {
         errorLog(e)
         res.sendStatus(400)
     }
 })
 
-/**
- * Get aurorian's metadata by it's name
- */
- router.get('/nft/aurorian/name/:name', async ( req, res ) => {
-    try {
 
-    } catch ( e ) {
-        errorLog(e)
-        res.sendStatus(400)
-    }
-})
-
-/**
- * Get an aurorian's metadata by it's mint address
- */
- router.get('/nft/aurorian/mint/:mint', async ( req, res ) => {
-    try {
-
-    } catch ( e ) {
-        errorLog(e)
-        res.sendStatus(400)
-    }
-})
 
 
 /** Programs related */
@@ -55,9 +42,31 @@ router.get('/token/aury', async ( req, res ) => {
  * - apr: est. APR
  * - reward: reward per hour
  */
-router.get('/program/open-v1/info', async ( req, res ) => {
+router.get('/programs/open-staking-v1', async ( req, res ) => {
     try {
+        const result = await provider.connection.getTokenAccountBalance(
+            new PublicKey(OPEN_STAKING_V1_AURY_VAULT_TA)
+        )
 
+        const distributedTotal = OPEN_STAKING_V1_REWARD_PHASES.reduce(
+            (totalRewards, [epoch, hourlyRewards], i) => {
+                const nextPhase = OPEN_STAKING_V1_REWARD_PHASES[i + 1]
+                const nextEpoch = nextPhase ? nextPhase[0] : Date.now() / 1000
+                const rewards = new BigNumber(
+                Math.floor(((nextEpoch - epoch) / 60 / 60) * hourlyRewards)
+                )
+                return totalRewards.plus(rewards)
+            },
+            new BigNumber(0)
+        )
+
+      
+        const stakedAmount = new BigNumber(result.value.amount).div(PRECISION)
+        const estApr = new BigNumber(OPEN_STAKING_V1_REWARD_PHASES[OPEN_STAKING_V1_REWARD_PHASES.length - 1]![1] * 24 * 365)
+            .div(stakedAmount.minus(distributedTotal))
+            .times(new BigNumber(100))
+        
+        return res.json({OPEN_STAKING_V1_REWARD_PHASES, stakedAmount, estApr})
     } catch ( e ) {
         errorLog(e)
         res.sendStatus(400)
@@ -71,140 +80,22 @@ router.get('/program/open-v1/info', async ( req, res ) => {
  * - reward: reward per hour
  * - lockEndDate: lock end date
  */
-router.get('/program/locked-v1/info', async ( req, res ) => {
+router.get('/programs/locked-staking-v1', async ( req, res ) => {
     try {
+        const result = await provider.connection.getTokenAccountBalance(
+            new PublicKey(LOCKED_STAKING_V1_AURY_VAULT_TA)
+        )
 
-    } catch ( e ) {
-        errorLog(e)
-        res.sendStatus(400)
-    }
-})
+        const stakedAmount = new BigNumber(result.value.amount).div(PRECISION)
 
-
-/** Aurorians on expedition */
-
-/**
- * Returns:
- * - totalSquads: total squads currently on expedition
- * - totalNfts: total number of aurorians on expedition
- * - totalRewards: total number of nfts rewarded up to date
- */
-router.get('/program/aoe/expeditions/info', async ( req, res ) => {
-    try {
-
-    } catch ( e ) {
-        errorLog(e)
-        res.sendStatus(400)
-    }
-})
-
-/**
- * Returns squads currently on expedition from pubkey
- */
-router.get('/program/aoe/expeditions/key/:pubkey/active', async ( req, res ) => {
-    try {
-
-    } catch ( e ) {
-        errorLog(e)
-        res.sendStatus(400)
-    }
-})
-
-/**
- * Returns pubkey's expedition history
- */
-router.get('/program/aoe/expeditions/key/:pubkey/history', async ( req, res ) => {
-    try {
-
-    } catch ( e ) {
-        errorLog(e)
-        res.sendStatus(400)
-    }
-})
-
-
-/** Marketplace */
-
-/**
- * Returns last sales
- */
- router.get('/program/mp/last-sales', async ( req, res ) => {
-    try {
-
-    } catch ( e ) {
-        errorLog(e)
-        res.sendStatus(400)
-    }
-})
-
-/**
- * Returns community favourties
- */
-router.get('/program/mp/favourites', async ( req, res ) => {
-    try {
-
-    } catch ( e ) {
-        errorLog(e)
-        res.sendStatus(400)
-    }
-})
-
-/**
- * Returns search results
- */
-router.post('/program/mp/search', async ( req: TypedBody<FilterMPRequest>, res ) => {
-    try {
-
-    } catch ( e ) {
-        errorLog(e)
-        res.sendStatus(400)
-    }
-})
-
-/**
- * Upvote / Downvote a deal
- */
-router.post('/program/mp/vote', async ( req: TypedBody<ReactionRequest>, res ) => {
-    try {
-
-    } catch ( e ) {
-        errorLog(e)
-        res.sendStatus(400)
-    }
-})
-
-/** Front-end event notifications */
-
-/**
- * An item has been bought
- */
-router.post('/event/mp/event/buy', async ( req: TypedBody<ListingRequest>, res ) => {
-    try {
-
-    } catch ( e ) {
-        errorLog(e)
-        res.sendStatus(400)
-    }
-})
-
-/**
- * An item was listed
- */
-router.post('/event/mp/list', async ( req: TypedBody<ListingRequest>, res ) => {
-    try {
-
-    } catch ( e ) {
-        errorLog(e)
-        res.sendStatus(400)
-    }
-})
-
-/**
- * An item was unlisted
- */
-router.post('/event/mp/unlist', async ( req: TypedBody<ListingRequest>, res ) => {
-    try {
-
+        const rewardDistributed = new BigNumber(
+        Math.floor(((Date.now() / 1000 - LOCKED_STAKING_REWARD_START_TS) / 60 / 60) * LOCKED_STAKING_REWARD_PER_HOUR)
+        )
+        const estApr = new BigNumber(LOCKED_STAKING_REWARD_PER_HOUR * 24 * 365)
+            .div(stakedAmount.minus(rewardDistributed))
+            .times(new BigNumber(100))
+        
+        return res.json({LOCKED_STAKING_REWARD_START_TS, LOCKED_STAKING_REWARD_PER_HOUR, stakedAmount, estApr})
     } catch ( e ) {
         errorLog(e)
         res.sendStatus(400)
