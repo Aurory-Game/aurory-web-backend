@@ -10,7 +10,8 @@
     "transpile": " ./node_modules/typescript/bin/tsc",
     "replace-aliases": "./node_modules/tsc-alias/dist/bin/index.js",
     "build": "yarn clean && yarn transpile && yarn replace-aliases",
-    "prod": "yarn build && NODE_ENV=production node dist/index.js"
+    "prod": "yarn build && NODE_ENV=production node dist/index.js",
+    "initprod": "git pull && yarn install && yarn prod"
   },
   "repository": "git@github.com:Aurory-Game/aurorynet-faucet-backend.git",
   "author": "Levani Tevdoradze <12980455+tevdoradze@users.noreply.github.com>",
