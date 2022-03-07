@@ -29,5 +29,5 @@ export async function getNft({tableName, id, mint}: GetNft): Promise<NFT> {
     const result = await dynamoDBClient.send(getItemcmd)
 
     const nft = JSON.parse(result.Items[0]['raw_nft'].S)
-    return {id, ...nft}
+    return {id: result.Items[0]['id'].S, ...nft}
 }
