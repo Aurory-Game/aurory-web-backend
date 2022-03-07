@@ -6,6 +6,8 @@ import routes from '@routes/index'
 
 import { log } from '@utils/log'
 
+import 'newrelic'
+
 const app = express()
 app.use(cors({
     origin: 'aurory.io'
