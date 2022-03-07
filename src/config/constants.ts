@@ -1,4 +1,4 @@
-export const ITEMS_TABLE = 'nfts-aurorynet'
+export const ITEMS_TABLE = process.env.ITEMS_TABLE || 'nfts-aurorynet'
 export const PRECISION = 1e9
 
 // load from somewhere else?
