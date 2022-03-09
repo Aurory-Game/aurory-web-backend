@@ -1,12 +1,11 @@
 import '@wrappers/dotenv'
+import 'newrelic'
 
 import express from 'express'
 import cors from 'cors'
 import routes from '@routes/index'
 
 import { log } from '@utils/log'
-
-import 'newrelic'
 
 const app = express()
 app.use(cors({
