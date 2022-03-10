@@ -9,7 +9,7 @@ import { log } from '@utils/log'
 
 const app = express()
 app.use(cors({
-    origin: 'aurory.io'
+    origin: '*'
 }))
 app.use(express.json())
 
