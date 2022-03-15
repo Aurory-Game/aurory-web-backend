@@ -3,9 +3,8 @@ const router = express.Router()
 
 import { errorLog } from '@utils/log'
 import { ReqNFTs } from '@interfaces/params'
-import { getNft } from '@utils/db'
 import { 
-    ITEMS_TABLE, PRECISION, OPEN_STAKING_V1_REWARD_PHASES, 
+    PRECISION, OPEN_STAKING_V1_REWARD_PHASES, 
     LOCKED_STAKING_REWARD_START_TS, LOCKED_STAKING_REWARD_PER_HOUR,
     OPEN_STAKING_V1_AURY_VAULT_TA, LOCKED_STAKING_V1_AURY_VAULT_TA
 } from '@config/constants'
@@ -13,6 +12,7 @@ import { NFT } from '@interfaces/nfts'
 import { provider } from '@wrappers/blockchain'
 import { PublicKey } from '@solana/web3.js'
 import BigNumber from 'bignumber.js'
+import { getNftFromID, getNftFromMint } from '@models/nft/methods'
 
 /**
  * Get nft's metadata by it's name or mint
@@ -20,9 +20,14 @@ import BigNumber from 'bignumber.js'
  router.get('/nfts', async ( req: ReqNFTs, res ) => {
     try {
         const { mint, id } = req.query
-        const aurorian: NFT = await getNft({tableName: ITEMS_TABLE, id, mint})
-
-        return res.json(aurorian)
+        let nft: NFT;
+        if (mint) {
+            nft = await getNftFromMint(mint)
+        } else {
+            nft = await getNftFromID(id)
+        }
+ 
+        return res.json({nft})
     } catch ( e ) {
         errorLog(e)
         res.sendStatus(400)

@@ -85,7 +85,7 @@ interface Creator {
 }
 
 
-interface Attribute {
+export interface Attribute {
     trait_type: string,
     value: number | string
     display_type?: 'number',
